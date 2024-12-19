@@ -1,18 +1,22 @@
 #include "renderer.h"
-#include "shader.h" // You only need to include this here
+#include "shader.h"
+#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
-Renderer::Renderer() : VAO(0), VBO(0), EBO(0), shader() {}
+Renderer::Renderer(GLFWwindow* window, unsigned int width, unsigned int height) 
+    : window(window), windowWidth(width), windowHeight(height), VAO(0), VBO(0), EBO(0), shader() {}
 
 Renderer::~Renderer() {
-    // Cleanup OpenGL resources
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
 void Renderer::init() {
-    log(INFO, RENDER, "attempting to initialize renderer...");
+    logm(INFO, RENDER, "attempting to initialize renderer...");
 
     float vertices[] = {
         -1.f, -1.f, 0.0f,
@@ -44,29 +48,14 @@ void Renderer::init() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // temporary! only for development
-    std::ifstream vertexFile("src/graphics/shaders/meow.vert");
-    std::ifstream fragmentFile("src/graphics/shaders/meow.frag");
-
-    if (!vertexFile.is_open() || !fragmentFile.is_open()) {
-        log(ERROR, RENDER, "failed to open shader files");
-        return;
-    }
-
-    std::stringstream vertexStream, fragmentStream;
-    vertexStream << vertexFile.rdbuf();
-    fragmentStream << fragmentFile.rdbuf();
-
-    std::string vertexShaderSource = vertexStream.str();
-    std::string fragmentShaderSource = fragmentStream.str();
-
-    shader = Shader(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
-    shader.use();
-
-    log(INFO, RENDER, "renderer initialized");
+    logm(INFO, RENDER, "renderer initialized");
 }
 
 void Renderer::render() {
+    if (!shader.isCompiled()) {
+        logm(WARN, RENDER, "shader is not compiled!");
+        return;
+    }
     shader.use();
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -74,7 +63,22 @@ void Renderer::render() {
 }
 
 void Renderer::update() {
-    // todo: update logic
+    if (!shader.isCompiled()) {
+        logm(WARN, RENDER, "shader is not compiled!");
+        return;
+    }
+    float time = static_cast<float>(glfwGetTime());
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    glm::vec4 mouse(static_cast<float>(mouseX), static_cast<float>(mouseY), 0.0f, 0.0f);
+
+    glm::vec2 resolution(windowWidth, windowHeight);
+
+    shader.setFloat("iGlobalTime", time);
+    shader.setVec3("iResolution", glm::vec3(resolution, resolution.x / resolution.y)); // Aspect ratio
+    shader.setVec4("iMouse", mouse);
+
 }
 
 void Renderer::setShader(const Shader& shader) {

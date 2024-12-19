@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-enum Level { INFO, ERROR, WARNING };
+enum Level { INFO, ERROR, WARN };
 enum Thread { MAIN, RENDER, UI, EDITOR };
 
 class Logger {
@@ -33,7 +33,7 @@ private:
     std::string levelToString(Level level) {
         switch (level) {
         case INFO: return "\e[0;34mINFO\e[0m";
-        case WARNING: return "\e[0;33mWARNING\e[0m";
+        case WARN: return "\e[0;33mWARNING\e[0m";
         case ERROR: return "\e[0;31mERROR\e[0m";
         default: return "UNKNOWN";
         }
@@ -50,4 +50,4 @@ private:
     }
 };
 
-#define log(level, thread, message) Logger::getInstance().log(level, thread, message)
+#define logm(level, thread, message) Logger::getInstance().log(level, thread, message)

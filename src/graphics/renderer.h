@@ -1,22 +1,24 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "shader.h"  // only necessary for the function declarations
-#include "../logger.h"
+#include "shader.h"
+#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>  // For GLFWwindow and window management
 
 class Renderer {
 public:
-    Renderer();
-    ~Renderer();
+    GLFWwindow* window;          
+    unsigned int windowWidth, windowHeight;
+    unsigned int VAO, VBO, EBO;
+    Shader shader; 
 
+    Renderer(GLFWwindow* window, unsigned int width, unsigned int height);
+    ~Renderer();
     void init();
     void render();
     void update();
-    void setShader(const Shader& shader);
 
-private:
-    unsigned int VAO, VBO, EBO;
-    Shader shader;
+    void setShader(const Shader& shader);
 };
 
-#endif  // RENDERER_H
+#endif
