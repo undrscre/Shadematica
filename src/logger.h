@@ -1,0 +1,53 @@
+#pragma once
+
+#include <ctime>
+#include <iostream>
+#include <string>
+
+enum Level { INFO, ERROR, WARNING };
+enum Thread { MAIN, RENDER, UI, EDITOR };
+
+class Logger {
+public:
+    static Logger& getInstance() {
+        static Logger instance;
+        return instance;
+    }
+
+    void log(Level level, Thread thread, const std::string& message) {
+        time_t now = time(0);
+        tm* timeinfo = localtime(&now);
+        char timestamp[20];
+        strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeinfo);
+
+        std::cout << "[" << timestamp << "] "
+                  << levelToString(level) << " @ " << threadToString(thread) << " THREAD: "
+                  << message << std::endl;
+    }
+
+private:
+    Logger() = default;
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+    std::string levelToString(Level level) {
+        switch (level) {
+        case INFO: return "\e[0;34mINFO\e[0m";
+        case WARNING: return "\e[0;33mWARNING\e[0m";
+        case ERROR: return "\e[0;31mERROR\e[0m";
+        default: return "UNKNOWN";
+        }
+    }
+
+    std::string threadToString(Thread thread) {
+        switch (thread) {
+        case MAIN: return "MAIN";
+        case RENDER: return "RENDER";
+        case UI: return "UI";
+        case EDITOR: return "EDITOR";
+        default: return "UNKNOWN";
+        }
+    }
+};
+
+#define log(level, thread, message) Logger::getInstance().log(level, thread, message)
