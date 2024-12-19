@@ -1,0 +1,27 @@
+# Build files
+/build/
+*.o
+*.obj
+*.exe
+*.out
+*.so
+*.dll
+*.dylib
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Submodule-related files
+libs/*/.git 
