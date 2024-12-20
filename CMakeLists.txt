@@ -4,6 +4,7 @@ project(Shadematica VERSION 0.1.0 LANGUAGES C CXX)
 add_executable(Shadematica src/main.cpp)
 target_sources(Shadematica PRIVATE
     src/graphics/renderer.cpp
+    src/graphics/shader.cpp
     src/editor/editor.cpp
     src/editor/ui.cpp
 )

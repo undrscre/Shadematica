@@ -1,9 +1,10 @@
 #ifndef RENDERER_H
-#define RENDERER_H
+#define REMDERER_H
 
 #include "shader.h"
+
 #include <glm/glm.hpp>
-#include <GLFW/glfw3.h>  // For GLFWwindow and window management
+#include <GLFW/glfw3.h> 
 
 class Renderer {
 public:

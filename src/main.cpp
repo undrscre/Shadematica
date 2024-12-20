@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -6,6 +8,25 @@
 #include "logger.h"
 #include "graphics/shader.h"
 #include "graphics/renderer.h"
+
+// todo: put this somewhere else
+const char *vertexFallback = "#version 330 core\n"
+                            "layout (location = 0) in vec3 aPos;\n"
+                            "void main()\n"
+                            "{\n"
+                            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                            "}\0";
+
+const char *fragmentFallback = "#version 330 core\n"
+                                "out vec4 FragColor;\n"
+                                "uniform float iGlobalTime;\n"
+                                "uniform vec3 iResolution;\n"
+                                "void main()\n"
+                                "{\n"
+                                "    vec2 uv = gl_FragCoord.xy / iResolution.xy;\n"
+                                "    vec3 color = vec3(uv.x, uv.y, sin(iGlobalTime) + 0.5);\n"
+                                "    FragColor = vec4(color, 1.0);\n"
+                                "}\0";
 
 int main()
 {
@@ -37,12 +58,13 @@ int main()
         return -1;
     }
 
-    // temporary! only for development
+    Renderer renderer(window, 800, 600);  // Window size: 800x600
+
     std::ifstream vertexFile("src/graphics/shaders/meow.vert");
     std::ifstream fragmentFile("src/graphics/shaders/meow.frag");
 
     if (!vertexFile.is_open() || !fragmentFile.is_open()) {
-        logm(ERROR, RENDER, "failed to open shader files");
+        logm(ERROR, RENDER, "failed to open shader files, attempting fallback");
         return -1;
     }
 
@@ -55,9 +77,22 @@ int main()
 
     Shader shader(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 
-    Renderer renderer(window, 800, 600);  // Window size: 800x600
+    if (!shader.isCompiled()) {
+        logm(WARN, RENDER, "shader cannot compile! attempting fallback");
+        shader.drop();
+        Shader fallback(vertexFallback, fragmentFallback);
+        if (!fallback.isCompiled()) {
+            logm(ERROR, RENDER, "fallback shader cannot compile! exiting");
+            return -1;
+        };
+        logm(WARN, RENDER, "fallback compiled, using fallback..");
+        fallback.use();
+        renderer.setShader(fallback);
+    } else {
+        renderer.setShader(shader);
+    }
+
     renderer.init();
-    renderer.setShader(shader);
 
     while (!glfwWindowShouldClose(window))
     {

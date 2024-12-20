@@ -5,7 +5,7 @@
 #include <string>
 
 enum Level { INFO, ERROR, WARN };
-enum Thread { MAIN, RENDER, UI, EDITOR };
+enum Thread { MAIN, RENDER, UI, EDITOR, SHADER };
 
 class Logger {
 public:
@@ -32,9 +32,9 @@ private:
 
     std::string levelToString(Level level) {
         switch (level) {
-        case INFO: return "\e[0;34mINFO\e[0m";
-        case WARN: return "\e[0;33mWARNING\e[0m";
-        case ERROR: return "\e[0;31mERROR\e[0m";
+        case INFO: return "\e[0;34;1mINFO\e[0m";
+        case WARN: return "\e[0;33;1mWARNING\e[0m";
+        case ERROR: return "\e[0;31;1mERROR\e[0m";
         default: return "UNKNOWN";
         }
     }
@@ -43,6 +43,7 @@ private:
         switch (thread) {
         case MAIN: return "MAIN";
         case RENDER: return "RENDER";
+        case SHADER: return "SHADER";
         case UI: return "UI";
         case EDITOR: return "EDITOR";
         default: return "UNKNOWN";

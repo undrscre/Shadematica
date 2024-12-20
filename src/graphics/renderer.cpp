@@ -1,10 +1,12 @@
-#include "renderer.h"
-#include "shader.h"
-#include <glm/glm.hpp>
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#include "renderer.h"
+#include "shader.h"
+
+#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 Renderer::Renderer(GLFWwindow* window, unsigned int width, unsigned int height) 
     : window(window), windowWidth(width), windowHeight(height), VAO(0), VBO(0), EBO(0), shader() {}
@@ -52,10 +54,6 @@ void Renderer::init() {
 }
 
 void Renderer::render() {
-    if (!shader.isCompiled()) {
-        logm(WARN, RENDER, "shader is not compiled!");
-        return;
-    }
     shader.use();
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -63,10 +61,6 @@ void Renderer::render() {
 }
 
 void Renderer::update() {
-    if (!shader.isCompiled()) {
-        logm(WARN, RENDER, "shader is not compiled!");
-        return;
-    }
     float time = static_cast<float>(glfwGetTime());
 
     double mouseX, mouseY;
